@@ -1,6 +1,6 @@
-import {api,esc,safeUrl,safeImageUrl,toast,routePath,routeSearch,routeUrl,resolveLinks,staticDemo} from './shared.js?v=a964b627349b';
-import {renderAdmin} from './admin.js?v=a964b627349b';
-import {recordPhotos,recordSource} from './media.js?v=a964b627349b';
+import {api,esc,safeUrl,safeImageUrl,toast,routePath,routeSearch,routeUrl,resolveLinks,staticDemo} from './shared.js?v=7ff5e5f7c06e';
+import {renderAdmin} from './admin.js?v=7ff5e5f7c06e';
+import {recordPhotos,recordSource} from './media.js?v=7ff5e5f7c06e';
 
 const root=document.querySelector('#app');
 let data, filter='全部', donationStep=1, donation={frequency:'單次捐款',amount:600,purpose:'由協會統籌運用',receipt:'電子收據'}, ledgerDemo=false;
@@ -51,5 +51,5 @@ function bind(){root.querySelector('#registration-form')?.addEventListener('subm
 render();
 
 if (staticDemo) {
- document.querySelector('#reset-demo')?.addEventListener('click',async()=>{if(!confirm('清除這個瀏覽器的測試資料，重新載入初始示範？'))return;try{await (await import('./pages-demo.js?v=a964b627349b')).resetDemo();location.href=routeUrl('/');}catch(error){toast(error.message);}});
+ document.querySelector('#reset-demo')?.addEventListener('click',async()=>{if(!confirm('清除這個瀏覽器的測試資料，重新載入初始示範？'))return;try{await (await import('./pages-demo.js?v=7ff5e5f7c06e')).resetDemo();location.href=routeUrl('/');}catch(error){toast(error.message);}});
 }

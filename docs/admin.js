@@ -1,4 +1,4 @@
-import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=a964b627349b';
+import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=7ff5e5f7c06e';
 
 let host;
 const state = {

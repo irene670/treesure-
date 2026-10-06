@@ -7,7 +7,7 @@ let initialPromise;
 async function passwordHash(value){const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(bytes)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 function database(){if(!opened)opened=new Promise((resolve,reject)=>{const request=indexedDB.open(DB_NAME,1);request.onupgradeneeded=()=>request.result.createObjectStore(STORE);request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(new Error('無法使用瀏覽器儲存空間，請確認允許網站儲存資料。'));});return opened;}
 async function seeded(){
-  const response=await fetch('./demo-seed.json');if(!response.ok)throw new Error('無法載入測試資料');
+  const response=await fetch('./demo-seed.json',{cache:'no-store'});if(!response.ok)throw new Error('無法載入測試資料');
   const content=await response.json();const hash=await passwordHash('MoriDemo2026!');return createDemoState(content,{admin:hash,editor:hash});
 }
 export async function demoApi(path,options={}){

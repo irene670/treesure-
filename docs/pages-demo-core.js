@@ -1,4 +1,4 @@
-import {validateRegistration} from './registration-core.js?v=a964b627349b';
+import {validateRegistration} from './registration-core.js?v=7ff5e5f7c06e';
 // Browser-local testing adapter. These checks model UI workflows, not server security.
 const copy = value => structuredClone(value);
 const id = () => crypto.randomUUID();
