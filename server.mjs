@@ -1,4 +1,5 @@
 import http from 'node:http';
+import {validateRegistration} from './public/registration-core.js';
 import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
@@ -9,6 +10,7 @@ const HOST = process.env.HOST || '127.0.0.1';
 const PUBLIC_DIR = resolve(process.env.MORI_PUBLIC_DIR || './public');
 const DB_PATH = process.env.MORI_DB_PATH || './mori.sqlite';
 const db = initializeDatabase(DB_PATH);
+db.exec('CREATE TABLE IF NOT EXISTS registrations (id TEXT PRIMARY KEY,json TEXT NOT NULL)');
 const loginFailures = new Map();
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_FAILURES = 10;
@@ -114,11 +116,13 @@ export const server = http.createServer(async (req, res) => {
       return send(res, 200, { user: cleanUser(row) }, { 'Set-Cookie': `mori_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${process.env.NODE_ENV==='production'?'; Secure':''}` });
     }
     if (req.method === 'POST' && p === '/api/admin/logout') { const u=userFrom(req); const t=cookie(req,'mori_session'); if(t) db.prepare('DELETE FROM sessions WHERE token=?').run(t); if(u) audit(u.email,'logout'); return send(res,200,{ok:true},{'Set-Cookie':'mori_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'}); }
+    if(req.method==='POST' && p==='/api/registrations'){const b=await readJson(req);let row;try{row=validateRegistration(b,list('posts',true));}catch(e){return send(res,400,{error:e.message});}const prior=db.prepare('SELECT json FROM registrations').all().map(x=>JSON.parse(x.json)).find(x=>x.eventId===row.eventId&&x.email===row.email);if(prior)return send(res,200,{id:prior.id,duplicate:true});row.id=randomUUID();db.prepare('INSERT INTO registrations VALUES(?,?)').run(row.id,JSON.stringify(row));return send(res,201,{id:row.id});}
     if (req.method === 'POST' && p === '/api/subscribe') { const b=await readJson(req); const email=String(b.email||'').trim().toLowerCase(); if(b.consent!==true || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return send(res,400,{error:'請提供有效 Email 並同意訂閱'}); let row=db.prepare('SELECT * FROM subscribers WHERE email=?').get(email); if(!row){row={id:randomUUID(),email,consented_at:new Date().toISOString(),active:1,token:randomBytes(24).toString('hex')};db.prepare('INSERT INTO subscribers VALUES(?,?,?,?,?)').run(row.id,row.email,row.consented_at,1,row.token);}else db.prepare('UPDATE subscribers SET active=1,consented_at=? WHERE id=?').run(new Date().toISOString(),row.id); return send(res,200,{ok:true,unsubscribeToken:row.token}); }
     if (req.method === 'POST' && p === '/api/unsubscribe') { const b=await readJson(req); const out=db.prepare('UPDATE subscribers SET active=0 WHERE token=?').run(String(b.token||'')); return send(res,out.changes?200:404,out.changes?{ok:true}:{error:'無效的取消訂閱連結'}); }
 
     if (p.startsWith('/api/admin/')) {
       const actor=requireUser(req,res); if(!actor) return;
+      if(req.method==='GET' && p==='/api/admin/registrations')return send(res,200,db.prepare('SELECT json FROM registrations').all().map(x=>JSON.parse(x.json)));
       if (req.method==='GET' && p==='/api/admin/content') return send(res,200,{settings:settings(),posts:list('posts'),ledger:list('ledger'),reports:list('reports')});
       if (req.method==='PUT' && p==='/api/admin/settings') { const b=await readJson(req); const allowed=Object.keys(settings()); const next=settings(); for(const k of allowed) if(k in b){if(typeof b[k]!=='string')return send(res,400,{error:'欄位格式錯誤'});next[k]=b[k].trim();} for(const k of ['lineUrl','instagramUrl','facebookUrl','groupUrl']) if(validateUrl(next[k])===null) return send(res,400,{error:'網址格式錯誤'}); if(validateAssetUrl(next.heroImage)===null)return send(res,400,{error:'首頁圖片網址格式錯誤'}); db.prepare('UPDATE settings SET json=? WHERE id=1').run(JSON.stringify(next)); audit(actor.email,'update','settings','1',next); return send(res,200,next); }
       const m=p.match(/^\/api\/admin\/(posts|ledger|reports)(?:\/([^/]+))?$/);

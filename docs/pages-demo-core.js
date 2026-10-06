@@ -1,3 +1,4 @@
+import {validateRegistration} from './registration-core.js';
 // Browser-local testing adapter. These checks model UI workflows, not server security.
 const copy = value => structuredClone(value);
 const id = () => crypto.randomUUID();
@@ -29,6 +30,7 @@ export function handleDemoRequest(state, path, options={}, sessionId=null) {
     return {result:{user:cleanUser(found)},sessionId:found.id};
   }
   if(path==='/api/admin/logout'&&method==='POST') {if(user) log('logout');return {result:{ok:true},sessionId:null};}
+  if(path==='/api/registrations'&&method==='POST'){const row=validateRegistration(body,state.posts);state.registrations??=[];const prior=state.registrations.find(x=>x.eventId===row.eventId&&x.email===row.email);if(prior)return {result:{id:prior.id,duplicate:true}};row.id=id();state.registrations.push(row);return {result:{id:row.id}};}
   if(path==='/api/subscribe'&&method==='POST') {
     const email=String(body.email||'').trim().toLowerCase();if(!validEmail(email)||body.consent!==true)fail('請提供有效 Email 並同意訂閱');
     let row=state.subscribers.find(s=>s.email===email);
@@ -40,6 +42,7 @@ export function handleDemoRequest(state, path, options={}, sessionId=null) {
   requireUser();
   if(path==='/api/admin/content'&&method==='GET')return {result:content(false)};
   if(path==='/api/admin/audit'&&method==='GET')return {result:copy(state.audit.slice(0,500))};
+  if(path==='/api/admin/registrations'&&method==='GET')return {result:copy(state.registrations||[])};
   if(path==='/api/admin/subscribers'&&method==='GET')return {result:copy(state.subscribers.map(({token,...row})=>row))};
   if(path==='/api/admin/settings'&&method==='PUT') {
     const next={...state.settings};for(const key of Object.keys(next))if(key in body)next[key]=String(body[key]??'');

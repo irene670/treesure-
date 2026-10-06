@@ -103,3 +103,13 @@ test('修改內容與稽核修訂可跨伺服器重啟持久保存', async () =>
   await stop(); await start(); c=await login();
   const all=await api('/api/admin/content',{cookie:c}); assert.equal(all.data.posts.find(x=>x.id===made.data.id).body,'原始內容');
 });
+
+test('活動報名驗證、去重、名單權限及持久保存', async()=>{
+ const body={eventId:'demo-life-workshop',name:'報名測試',email:'registration@example.com',count:2,consent:true};
+ const first=await api('/api/registrations',{method:'POST',body});assert.equal(first.response.status,201);
+ const again=await api('/api/registrations',{method:'POST',body});assert.equal(again.data.id,first.data.id);
+ assert.equal((await api('/api/registrations',{method:'POST',body:{...body,eventId:'forest-fair-2026'}})).response.status,400);
+ assert.equal((await api('/api/admin/registrations')).response.status,401);
+ const cookie=await login('editor@mori.local');await stop();await start();
+ const rows=await api('/api/admin/registrations',{cookie});assert.equal(rows.response.status,200);assert.equal(rows.data.filter(x=>x.email===body.email).length,1);assert.equal(rows.data.find(x=>x.id===first.data.id).count,2);
+});

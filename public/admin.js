@@ -2,14 +2,14 @@ import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from
 
 let host;
 const state = {
-  user: null, tab: 'overview', content: null, audit: [], users: [], subscribers: [],
+  user: null, tab: 'overview', content: null, audit: [], users: [], subscribers: [], registrations: [],
   editing: { posts: null, ledger: null, reports: null, users: null }, uploadedPostImage: '', error: '', pending: false
 };
 
 const tabs = [
   ['overview', '總覽'], ['posts', '內容管理'], ['settings', '網站設定'],
   ['ledger', '款項流向'], ['reports', '公開報告'], ['users', '操作人員'],
-  ['subscribers', '訂閱名單'], ['audit', '修改紀錄']
+  ['registrations','活動報名'], ['subscribers', '訂閱名單'], ['audit', '修改紀錄']
 ];
 const settingsFields = [
   ['name','協會正式名稱'], ['shortName','網站簡稱'], ['mission','核心宗旨','textarea'],
@@ -76,6 +76,7 @@ async function loadContent() {
 async function loadTabData(tab = state.tab) {
   if (!state.content) await loadContent();
   if (tab === 'audit') state.audit = await api('/api/admin/audit');
+  if (tab === 'registrations') state.registrations = await api('/api/admin/registrations');
   if (tab === 'subscribers') state.subscribers = await api('/api/admin/subscribers');
   if (tab === 'users' && state.user.role === 'admin') state.users = await api('/api/admin/users');
 }
@@ -151,7 +152,7 @@ function renderCurrentTab() {
   return ({
     overview: renderOverview, posts: renderPosts, settings: renderSettings,
     ledger: renderLedger, reports: renderReports, users: renderUsers,
-    subscribers: renderSubscribers, audit: renderAudit
+    registrations: renderRegistrations, subscribers: renderSubscribers, audit: renderAudit
   }[state.tab] || renderOverview)();
 }
 
@@ -277,6 +278,7 @@ function bindUsers() {
   host.querySelectorAll('[data-edit-users]').forEach(b=>b.addEventListener('click',()=>{state.editing.users=b.dataset.editUsers;render();}));
 }
 
+function renderRegistrations(){return `<section><h1>活動報名測試名單</h1><p class="notice">目前僅接受示範活動。${staticDemo?'名單僅存在這個瀏覽器，不會跨裝置同步。':'未開放正式活動報名。'}</p><div class="admin-table"><table><thead><tr><th>活動</th><th>測試姓名</th><th>Email</th><th>人數</th><th>登記時間</th></tr></thead><tbody>${state.registrations.map(x=>`<tr><td>${text(x.eventTitle)}</td><td>${text(x.name)}</td><td>${text(x.email)}</td><td>${x.count}</td><td>${text(formatTime(x.createdAt))}</td></tr>`).join('')||'<tr><td colspan="5">尚無報名測試資料</td></tr>'}</tbody></table></div></section>`;}
 function renderSubscribers() {
   return `<section><p class="muted">消息訂閱</p><h1>訂閱名單</h1><div class="panel"><button class="btn" id="export-subscribers" type="button">匯出 CSV</button><p class="muted">網站只保存訂閱同意與取消狀態，不會自動寄信。</p><div class="admin-table" tabindex="0"><table><thead><tr><th>Email</th><th>同意時間</th><th>狀態</th></tr></thead><tbody>${state.subscribers.map(x=>`<tr><td>${text(x.email)}</td><td>${text(formatTime(x.consentedAt))}</td><td><span class="badge">${x.active?'訂閱中':'已取消'}</span></td></tr>`).join('')||'<tr><td colspan="3">尚無訂閱資料</td></tr>'}</tbody></table></div></div></section>`;
 }
