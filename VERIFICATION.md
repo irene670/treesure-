@@ -14,3 +14,13 @@
 - 未正式公開部署；127.0.0.1 僅這台 Mac 可用。
 - 未串真實金流、正式捐款徵信、電子報寄送或第三方登入。
 - Facebook／Instagram 部分內容受平台限制，未下載未取得的貼文素材。
+
+## GitHub Pages 外部測試版
+
+- 新增獨立瀏覽器測試儲存（IndexedDB）、子目錄／query 路由及本機 Pages 預覽。
+- npm test 更新為 17/17 通過（原 Node 12 項 + Pages adapter 5 項）。
+- 子目錄預覽：無壞圖，內部連結正確保留 /treesure-/。
+- 瀏覽器：編輯者登入、新增消息直接發布、重新載入後仍保留，前台消息頁可见。公開部署只使用 content-seed.mjs 的初始資料，不複製本機資料庫、訂閱名單或測試文章。
+- 明確區分：GitHub Pages 操作資料是各自瀏覽器的測試資料，沒有共享 Node／SQLite 後端。未宣稱正式多人共用系統已上線。
+
+- 公開站 https://irene670.github.io/treesure-/ 已由 GitHub Pages 回報 built，並確認 HTTP 首頁與瀏覽器載入成功、無壞圖、管理員可登入後台。

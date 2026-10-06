@@ -2,6 +2,20 @@
 
 以既有 MORILOOP CIS 製作的前台與多人內容後台。資料存放於本機 SQLite，沒有額外 npm 套件。
 
+## 外部人員測試（GitHub Pages）
+
+- 網站：https://irene670.github.io/treesure-/
+- 測試後台：https://irene670.github.io/treesure-/?page=%2Fadmin
+- 程式碼：https://github.com/irene670/treesure-
+
+GitHub Pages 版是瀏覽器測試模式：前台、捐款示範、後台登入、草稿／發布、圖片、收支、報告、帳號及訂閱名單可操作。資料儲存於當前瀏覽器的 IndexedDB；重新載入仍保留，其他瀏覽器／測試者看不到你的修改。這不是多人共用的正式後台，不會把訂閱資料送交協會，不會寄信或收款。請用虛構資料與示範密碼測試，勿填真實個資。
+
+頁首提供「重新開始測試」，可清除這個瀏覽器的測試資料並恢復初始内容。管理員與編輯者的示範帳密同下。
+
+修改後執行 `npm run build:pages`，將產生的 `docs/` 一起提交到 main。GitHub Pages 設為 main 分支 `/docs`。路由使用 `?page=`，支援直接分享與重新整理，不依賴 Node 伺服器。
+
+本機驗收 Pages 子目錄：`npm run preview:pages` → http://127.0.0.1:4311/treesure-/ 。完整多人共用 Node／SQLite 版的啟動方式如下，正式部署需另接可運行 Node 的主機與持久化磁碟。
+
 ## 啟動
 
 需要 Node.js 22.5 以上（本次使用 25.2.1；內建 SQLite 可能顯示 experimental 提示）。
@@ -16,7 +30,7 @@ npm start
 - 編輯者：editor@mori.local
 - 示範密碼：MoriDemo2026!
 
-預設只綁定這台 Mac 的 loopback，其他裝置不能使用這個網址。公開部署尚未完成。
+Node 版預設只綁定這台 Mac 的 loopback，其他裝置不能使用這個網址。GitHub Pages 外部測試版使用上方的 github.io 網址。
 
 ## 後台操作
 
