@@ -1,0 +1,16 @@
+{
+  "name": "mori-association-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "seed": "node seed.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "preview:pages": "node scripts/preview-pages.mjs"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

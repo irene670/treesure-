@@ -1,0 +1,9 @@
+mori.sqlite*
+public/uploads/
+.DS_Store
+artifacts/
+
+.env
+.env.*
+node_modules/
+*.log

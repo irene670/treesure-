@@ -1,0 +1,121 @@
+{
+  "settings": {
+    "name": "社團法人台灣森藏永續文教協會",
+    "shortName": "森藏永續文教協會",
+    "mission": "以教育推廣為核心，推動二手循環、生態環境永續與公益行動。",
+    "about": "我們透過二手市集、環境教育、樹苗與植樹活動，邀請更多人把永續落實在日常生活中。",
+    "phone": "0973139328",
+    "address": "臺南市歸仁區高發一路10號4樓之6",
+    "lineUrl": "https://line.me/R/ti/p/@522faddt",
+    "instagramUrl": "https://www.instagram.com/mori_loop0422/",
+    "facebookUrl": "https://www.facebook.com/profile.php?id=61588987410879",
+    "groupUrl": "https://www.facebook.com/groups/1488783628240461",
+    "heroImage": "/assets/market.png",
+    "heroTitle": "讓美好，\n再次循環。",
+    "heroText": "從二手循環市集、環境教育到樹苗與植樹活動，一起參與森藏的永續行動。"
+  },
+  "posts": [
+    {
+      "id": "mori-loop-markets",
+      "title": "森藏二手循環市集",
+      "type": "story",
+      "category": "二手循環",
+      "summary": "協會已舉辦多場二手市集，讓閒置物品重新進入生活。",
+      "body": "透過市集交流、惜物分享與教育推廣，邀請大眾一起減少浪費。最新場次與報名資訊請以官方社群及主網站公告為準。",
+      "image": "/assets/market.png",
+      "date": "",
+      "location": "",
+      "registrationUrl": "https://housmart.com.tw/market",
+      "status": "published",
+      "isDemo": false
+    },
+    {
+      "id": "forest-fair-2026",
+      "title": "森藏市集｜學森園遊會",
+      "type": "activity",
+      "category": "二手循環",
+      "summary": "2026 年 10 月 11 日在高雄市凹子底森林公園舉行，歡迎攤主加入循環市集。",
+      "body": "活動時間為 2026 年 10 月 11 日 13:00–19:00，地點為高雄市凹子底森林公園。活動資訊取自主辦單位官方網站；本站按鈕連往攤主招募頁。",
+      "image": "/assets/market.png",
+      "date": "2026-10-11",
+      "location": "高雄市凹子底森林公園",
+      "registrationUrl": "https://housmart.com.tw/market/home/01M2H8JAJXWC9K1PPXG5304T2R/recruitment?return=%2Fmarket",
+      "status": "published",
+      "isDemo": false
+    },
+    {
+      "id": "kids-market-2026",
+      "title": "小孩好忙親子市集",
+      "type": "activity",
+      "category": "親子循環",
+      "summary": "2026 年 10 月 9 日至 11 日，在新光三越高雄左營店本館 10 樓舉行。",
+      "body": "活動期間為 2026 年 10 月 9 日至 11 日，每日 10:00–19:00，地點為新光三越高雄左營店本館 10 樓。活動資訊取自主辦單位官方網站；本站按鈕連往攤主招募頁。",
+      "image": "/assets/kids-market.webp",
+      "date": "2026-10-09",
+      "location": "新光三越高雄左營店本館10F",
+      "registrationUrl": "https://housmart.com.tw/market/home/01M10Y3ZXDD3YCWKWE13CXBY2Q/recruitment?return=%2Fmarket",
+      "status": "published",
+      "isDemo": false
+    },
+    {
+      "id": "sapling-esg",
+      "title": "小樹苗與植樹 ESG 活動",
+      "type": "activity",
+      "category": "生態永續",
+      "summary": "提供小樹苗及植樹相關活動，串連企業與社區的永續參與。",
+      "body": "實際活動時間、地點與合作方式將於確認後公告，也可透過 LINE 洽詢。",
+      "image": "",
+      "date": "",
+      "location": "",
+      "registrationUrl": "https://line.me/R/ti/p/@522faddt",
+      "status": "published",
+      "isDemo": false
+    },
+    {
+      "id": "demo-life-workshop",
+      "title": "惜物生活工作坊（示範內容）",
+      "type": "activity",
+      "category": "環境教育",
+      "summary": "此為後台操作與版面展示用的示範活動。",
+      "body": "活動尚未正式公告，日期、地點及內容均為待補資料。",
+      "image": "/assets/market.png",
+      "date": "",
+      "location": "",
+      "registrationUrl": "",
+      "status": "published",
+      "isDemo": true
+    }
+  ],
+  "ledger": [
+    {
+      "id": "demo-ledger-1",
+      "date": "2026-01-01",
+      "type": "income",
+      "category": "示範收入",
+      "amount": 10000,
+      "note": "網站版面展示資料，並非真實捐款或會計紀錄。",
+      "isDemo": true,
+      "status": "published"
+    },
+    {
+      "id": "demo-ledger-2",
+      "date": "2026-01-15",
+      "type": "expense",
+      "category": "示範活動支出",
+      "amount": 3500,
+      "note": "網站版面展示資料，並非真實支出。",
+      "isDemo": true,
+      "status": "published"
+    }
+  ],
+  "reports": [
+    {
+      "id": "demo-report-2026",
+      "title": "年度成果與財務報告（示範）",
+      "year": 2026,
+      "url": "",
+      "status": "published",
+      "isDemo": true
+    }
+  ]
+}
