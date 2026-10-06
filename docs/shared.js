@@ -31,7 +31,7 @@ export function safeImageUrl(value) {
   return staticDemo && /^data:image\/(?:png|jpeg|webp);base64,[a-zA-Z0-9+/=]+$/.test(value) ? value : safeUrl(value);
 }
 export async function api(path, options = {}) {
-  if (staticDemo) return (await import('./pages-demo.js')).demoApi(path, options);
+  if (staticDemo) return (await import('./pages-demo.js?v=a964b627349b')).demoApi(path, options);
   const init = {...options, headers:{...options.headers}};
   if (init.body && typeof init.body !== 'string') { init.body=JSON.stringify(init.body); init.headers['Content-Type']='application/json'; }
   const res=await fetch(path, init); const data=await res.json();
