@@ -102,3 +102,5 @@ export function handleDemoRequest(state, path, options={}, sessionId=null) {
   }
   fail('找不到操作');
 }
+
+export function addMissingSeedPosts(state,initial){for(const row of initial.posts){if(!state.posts.some(p=>p.id===row.id))state.posts.push(copy(row));}return state;}

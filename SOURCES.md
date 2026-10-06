@@ -11,3 +11,9 @@
 - 公開資訊版面參考：https://www.greenpeace.org/taiwan/about/reports/ 及 https://taeanimal.org.tw/donation_record.php 。未複製其數字、照片、法律聲明或捐款條件。
 
 使用者已授權取用自有官網及社群公開素材。財務示範非真實交易，沒有捏造捐款、減碳、樹苗數或活動人數。
+
+## 2026-10-06 圖片與內容補充
+- `market-september.jpg`、`soil-activity.jpg`、`market-treasures.jpg`：森藏粉專公開分享的九月衛武營市集紀錄，原作者／貼文：Homeless Concerns 特派員，https://www.facebook.com/homelessconcern/posts/pfbid02qn4ZaF9b2skDKryKBB4F9NMvfYvtKHV8nQaKcJwHKnpwCw2rw83XkDdTG1V8gZBGl 。網站照片集及成果文章保留署名與原貼文連結；未把發布時間當成活動日期，未引入未核實的人流数字。
+- `forest-invitation.jpg`、`forest-poster.jpg`、`forest-community.jpg`：森藏粉專自有學森園遊會攤商招募宣傳圖，https://www.facebook.com/permalink.php?story_fbid=pfbid0MgDCdck7e6oQtqLwayeRWvCQTUEUs5xdNNyF3Fqbo64cfpZntQu4pbCjgKFMH8Exl&id=61588987410879 。這批為官方宣傳素材，不作為已完成活動的現場照片。
+- 圖片透過瀏覽器可見素材匯出，轉存本地 JPEG（最長邊不超過1200px、品質78），避免 Facebook 圖片連結到期後破圖。原素材未用生成式工具修改。
+- 新增「九月森藏市集：讓好物與好事繼續發生」成果故事，依原紀錄摘要整理，非逐字複製；未公開故事中個別弱勢參與者姓名或身份細節。

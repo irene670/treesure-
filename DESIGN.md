@@ -16,3 +16,6 @@ LINE @522faddt 為志工、入會、合作聯繫入口。活動報名連回主�
 
 ## 實作與驗收
 空白專案，選用無額外套件的 HTML/CSS/JavaScript ES modules + Node.js HTTP + SQLite。適用 Node >=22.5。後台表單、資料持久化、發布權限、草稿隔離、CSRF 與財務數字須測試。375/768/1024/1440px 檢查無橫向溢出、焦點、標籤、44px觸控區及 reduced-motion。
+
+## 圖片補強（2026-10-06）
+依 UI/UX Pro Max 的 Editorial Grid / Magazine 參考，沿用既有 CIS，改用圖片帶領閱讀：首頁紀錄大圖與小照片、三張行動卡片、錯落照片集；行動計畫採左右交錯圖文；消息用縮圖文章列表；活動用完整官方海報。照片圖說在圖片外顯示，保留對比與署名。手機版改為單欄／兩欄，海報使用 contain 保留日期與資訊，照片 use cover，具 alt、保留尺寸、lazy loading。宣傳素材與已完成活動紀錄分開。

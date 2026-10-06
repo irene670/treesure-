@@ -16,6 +16,20 @@
   },
   "posts": [
     {
+      "id": "september-market-moments",
+      "title": "九月森藏市集：讓好物與好事繼續發生",
+      "type": "story",
+      "category": "市集紀錄",
+      "summary": "在衛武營，二手物品重新被需要，人們透過交流與永續任務一起參與。",
+      "body": "九月森藏市集在衛武營留下了人與物相遇的時刻。攤位上的鞋子、玩具與生活用品，等待走進下一位主人的生活；參與者也透過動手裝土等永續任務，把環境教育變成一次親身體驗。\nHomeless Concerns 特派員的公開紀錄也分享了弱勢工作者參與市集服務與二手交流的故事。市集讓物品再次流動，也為人們創造交流與參與的機會。\n本篇依森藏粉專分享之九月市集公開紀錄整理。照片來源：Homeless Concerns 特派員；活動完整故事請見原貼文。",
+      "image": "/assets/market-treasures.jpg",
+      "date": "",
+      "location": "高雄衛武營",
+      "registrationUrl": "https://www.facebook.com/homelessconcern/posts/pfbid02qn4ZaF9b2skDKryKBB4F9NMvfYvtKHV8nQaKcJwHKnpwCw2rw83XkDdTG1V8gZBGl",
+      "status": "published",
+      "isDemo": false
+    },
+    {
       "id": "mori-loop-markets",
       "title": "森藏二手循環市集",
       "type": "story",

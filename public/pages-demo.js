@@ -1,4 +1,4 @@
-import {createDemoState,handleDemoRequest} from './pages-demo-core.js';
+import {createDemoState,handleDemoRequest,addMissingSeedPosts} from './pages-demo-core.js';
 
 const DB_NAME='mori-pages-test-v1';
 const STORE='demo';
@@ -16,7 +16,7 @@ export async function demoApi(path,options={}){
   const session=sessionStorage.getItem('mori-demo-session');
   return new Promise((resolve,reject)=>{
     const tx=db.transaction(STORE,'readwrite');const store=tx.objectStore(STORE);const request=store.get('state');let out;
-    request.onsuccess=()=>{try{const state=request.result||initial;out=handleDemoRequest(state,path,{...options,body},session);store.put(state,'state');}catch(error){tx.abort();reject(error);}};
+    request.onsuccess=()=>{try{const state=addMissingSeedPosts(request.result||initial,initial);out=handleDemoRequest(state,path,{...options,body},session);store.put(state,'state');}catch(error){tx.abort();reject(error);}};
     tx.oncomplete=()=>{if('sessionId'in out){if(out.sessionId)sessionStorage.setItem('mori-demo-session',out.sessionId);else sessionStorage.removeItem('mori-demo-session');}resolve(out.result);};
     tx.onerror=()=>reject(new Error('瀏覽器儲存失敗，請檢查可用空間。'));tx.onabort=()=>reject(new Error('操作未儲存，請再試一次。'));
   });
