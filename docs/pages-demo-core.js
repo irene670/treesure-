@@ -1,4 +1,5 @@
-import {validateRegistration} from './registration-core.js?v=7ff5e5f7c06e';
+import {validateRegistration} from './registration-core.js?v=80f76838ae66';
+import {handleSaplingRequest} from './saplings-core.js?v=80f76838ae66';
 // Browser-local testing adapter. These checks model UI workflows, not server security.
 const copy = value => structuredClone(value);
 const id = () => crypto.randomUUID();
@@ -9,7 +10,7 @@ const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.te
 const validUrl = value => !value || (typeof value === 'string' && /^https?:\/\//.test(value) && (()=>{try{const u=new URL(value);return !u.username&&!u.password;}catch{return false;}})());
 
 export function createDemoState(content, hashes) {
-  return {...copy(content), users:[
+  return {...copy(content), saplingEvents:copy(content.saplingEvents || []), saplingRegistrations:copy(content.saplingRegistrations || []), users:[
     {id:'admin-demo',email:'admin@mori.local',name:'示範管理員',role:'admin',active:true,passwordHash:hashes.admin},
     {id:'editor-demo',email:'editor@mori.local',name:'示範編輯者',role:'editor',active:true,passwordHash:hashes.editor}
   ],audit:[],subscribers:[],version:1};
@@ -30,6 +31,8 @@ export function handleDemoRequest(state, path, options={}, sessionId=null) {
     return {result:{user:cleanUser(found)},sessionId:found.id};
   }
   if(path==='/api/admin/logout'&&method==='POST') {if(user) log('logout');return {result:{ok:true},sessionId:null};}
+  const saplingResult=handleSaplingRequest(state,path,options,{user:cleanUser(user),log,now:options.now});
+  if(saplingResult.handled)return {result:saplingResult.result};
   if(path==='/api/registrations'&&method==='POST'){const row=validateRegistration(body,state.posts);state.registrations??=[];const prior=state.registrations.find(x=>x.eventId===row.eventId&&x.email===row.email);if(prior)return {result:{id:prior.id,duplicate:true}};row.id=id();state.registrations.push(row);return {result:{id:row.id}};}
   if(path==='/api/subscribe'&&method==='POST') {
     const email=String(body.email||'').trim().toLowerCase();if(!validEmail(email)||body.consent!==true)fail('請提供有效 Email 並同意訂閱');
@@ -103,4 +106,4 @@ export function handleDemoRequest(state, path, options={}, sessionId=null) {
   fail('找不到操作');
 }
 
-export function addMissingSeedPosts(state,initial){for(const row of initial.posts){if(!state.posts.some(p=>p.id===row.id))state.posts.push(copy(row));}return state;}
+export function addMissingSeedPosts(state,initial){for(const row of initial.posts){if(!state.posts.some(p=>p.id===row.id))state.posts.push(copy(row));}state.saplingEvents??=[];state.saplingRegistrations??=[];for(const row of initial.saplingEvents||[]){if(!state.saplingEvents.some(event=>event.id===row.id))state.saplingEvents.push(copy(row));}return state;}

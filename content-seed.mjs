@@ -32,4 +32,24 @@ export const reports = [
     { id: 'demo-report-2026', title: '年度成果與財務報告（示範）', year: 2026, url: '', status: 'published', isDemo: true }
   ];
 
-export const initialContent = {settings,posts,ledger,reports};
+export const saplingEvents = [
+  {
+    id: 'aozihdi-2026-10-11',
+    title: '凹子底市集・小樹苗活動',
+    date: '2026-10-11',
+    endDate: '2026-10-11',
+    time: '13:00–19:00',
+    location: '高雄市凹子底森林公園',
+    species: ['羅漢松'],
+    status: 'published',
+    registrationOpen: true,
+    isDemo: true,
+    description: '在本場市集領取一株小樹苗，留下領取紀錄；未來有植樹或市集活動時，可選擇接收活動通知。',
+    care: '帶回家後請依現場提供的照顧說明，留意日照、澆水與適合的生長空間。',
+    solicitationNumber: '',
+    solicitationPeriod: '',
+    donationMode: 'onsite'
+  }
+];
+
+export const initialContent = {settings,posts,ledger,reports,saplingEvents,saplingRegistrations:[]};

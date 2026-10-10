@@ -1,5 +1,6 @@
 import http from 'node:http';
 import {validateRegistration} from './public/registration-core.js';
+import {adminSaplingRegistration, notificationRecipients, publicSaplingEvent, validateSaplingEvent, validateSaplingRegistration} from './public/saplings-core.js';
 import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from 'node:crypto';
@@ -47,6 +48,8 @@ function verifyPassword(password, stored) { try { const [salt, hex] = stored.spl
 function cleanUser(row) { return row && { id: row.id, email: row.email, name: row.name, role: row.role, active: Boolean(row.active) }; }
 function list(kind, publishedOnly = false) { return db.prepare(`SELECT json FROM content WHERE kind=? AND deleted=0 ${publishedOnly ? "AND json_extract(json,'$.status')='published'" : ''} ORDER BY rowid DESC`).all(kind).map(r => JSON.parse(r.json)); }
 function settings() { return JSON.parse(db.prepare('SELECT json FROM settings WHERE id=1').get().json); }
+function saplingEvents(publishedOnly = false) { return db.prepare('SELECT json FROM sapling_events ORDER BY rowid DESC').all().map(row => JSON.parse(row.json)).filter(row => !publishedOnly || row.status === 'published'); }
+function saplingRegistrations() { return db.prepare('SELECT json FROM sapling_registrations ORDER BY rowid DESC').all().map(row => JSON.parse(row.json)); }
 function audit(actor, action, kind = null, targetId = null, snapshot = null) { const id = randomUUID(); db.prepare('INSERT INTO audit(id,actor,action,time,kind,target_id,snapshot) VALUES(?,?,?,?,?,?,?)').run(id, actor, action, new Date().toISOString(), kind, targetId, snapshot ? JSON.stringify(snapshot) : null); return id; }
 function validateUrl(value) { if (!value) return ''; try { const u = new URL(value); return ['http:','https:'].includes(u.protocol) ? value : null; } catch { return null; } }
 function validateAssetUrl(value) {
@@ -116,12 +119,45 @@ export const server = http.createServer(async (req, res) => {
       return send(res, 200, { user: cleanUser(row) }, { 'Set-Cookie': `mori_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${process.env.NODE_ENV==='production'?'; Secure':''}` });
     }
     if (req.method === 'POST' && p === '/api/admin/logout') { const u=userFrom(req); const t=cookie(req,'mori_session'); if(t) db.prepare('DELETE FROM sessions WHERE token=?').run(t); if(u) audit(u.email,'logout'); return send(res,200,{ok:true},{'Set-Cookie':'mori_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0'}); }
+    if (req.method === 'GET' && p === '/api/saplings/events') return send(res,200,saplingEvents(true).map(publicSaplingEvent));
+    const saplingEventMatch=p.match(/^\/api\/saplings\/events\/([^/]+)$/);
+    if (req.method === 'GET' && saplingEventMatch) { const event=saplingEvents(true).find(row=>row.id===decodeURIComponent(saplingEventMatch[1])); return event?send(res,200,publicSaplingEvent(event)):send(res,404,{error:'找不到這場樹苗活動'}); }
+    if (req.method === 'POST' && p === '/api/saplings/registrations') {
+      const body=await readJson(req,3_100_000); let row;
+      try { row=validateSaplingRegistration(body,saplingEvents()); } catch(error) { return send(res,error.status||400,{error:error.message}); }
+      const priorRow=db.prepare('SELECT json FROM sapling_registrations WHERE event_id=? AND email=?').get(row.eventId,row.email);
+      const event=saplingEvents().find(item=>item.id===row.eventId);
+      if(priorRow){const prior=JSON.parse(priorRow.json);return send(res,200,{id:prior.id,duplicate:true,isDemo:Boolean(event?.isDemo)});}
+      row.id=randomUUID();row.unsubscribeToken=randomBytes(24).toString('hex');
+      try { db.prepare('INSERT INTO sapling_registrations(id,event_id,email,unsubscribe_token,json) VALUES(?,?,?,?,?)').run(row.id,row.eventId,row.email,row.unsubscribeToken,JSON.stringify(row)); }
+      catch(error) { const collision=db.prepare('SELECT json FROM sapling_registrations WHERE event_id=? AND email=?').get(row.eventId,row.email);if(!collision)throw error;const prior=JSON.parse(collision.json);return send(res,200,{id:prior.id,duplicate:true,isDemo:Boolean(event?.isDemo)}); }
+      return send(res,201,{id:row.id,duplicate:false,isDemo:Boolean(event?.isDemo),unsubscribeToken:row.unsubscribeToken});
+    }
+    if (req.method === 'POST' && p === '/api/saplings/unsubscribe') {
+      const body=await readJson(req);const stored=db.prepare('SELECT json FROM sapling_registrations WHERE unsubscribe_token=?').get(String(body.token||''));
+      if(!stored)return send(res,404,{error:'無效的取消通知連結'});
+      const row=JSON.parse(stored.json);row.notificationActive=false;db.prepare('UPDATE sapling_registrations SET json=? WHERE id=?').run(JSON.stringify(row),row.id);return send(res,200,{ok:true});
+    }
     if(req.method==='POST' && p==='/api/registrations'){const b=await readJson(req);let row;try{row=validateRegistration(b,list('posts',true));}catch(e){return send(res,400,{error:e.message});}const prior=db.prepare('SELECT json FROM registrations').all().map(x=>JSON.parse(x.json)).find(x=>x.eventId===row.eventId&&x.email===row.email);if(prior)return send(res,200,{id:prior.id,duplicate:true});row.id=randomUUID();db.prepare('INSERT INTO registrations VALUES(?,?)').run(row.id,JSON.stringify(row));return send(res,201,{id:row.id});}
     if (req.method === 'POST' && p === '/api/subscribe') { const b=await readJson(req); const email=String(b.email||'').trim().toLowerCase(); if(b.consent!==true || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return send(res,400,{error:'請提供有效 Email 並同意訂閱'}); let row=db.prepare('SELECT * FROM subscribers WHERE email=?').get(email); if(!row){row={id:randomUUID(),email,consented_at:new Date().toISOString(),active:1,token:randomBytes(24).toString('hex')};db.prepare('INSERT INTO subscribers VALUES(?,?,?,?,?)').run(row.id,row.email,row.consented_at,1,row.token);}else db.prepare('UPDATE subscribers SET active=1,consented_at=? WHERE id=?').run(new Date().toISOString(),row.id); return send(res,200,{ok:true,unsubscribeToken:row.token}); }
     if (req.method === 'POST' && p === '/api/unsubscribe') { const b=await readJson(req); const out=db.prepare('UPDATE subscribers SET active=0 WHERE token=?').run(String(b.token||'')); return send(res,out.changes?200:404,out.changes?{ok:true}:{error:'無效的取消訂閱連結'}); }
 
     if (p.startsWith('/api/admin/')) {
       const actor=requireUser(req,res); if(!actor) return;
+      if(req.method==='GET' && p==='/api/admin/saplings/registrations')return send(res,200,saplingRegistrations().map(row=>adminSaplingRegistration(row,saplingEvents())));
+      if(req.method==='GET' && p==='/api/admin/saplings/notification-recipients')return send(res,200,notificationRecipients(saplingRegistrations()));
+      const adminSaplingEvents=p.match(/^\/api\/admin\/saplings\/events(?:\/([^/]+))?$/);
+      if(adminSaplingEvents&&req.method==='GET'&&!adminSaplingEvents[1])return send(res,200,saplingEvents());
+      if(adminSaplingEvents&&req.method==='POST'&&!adminSaplingEvents[1]){
+        let event;try{event=validateSaplingEvent(await readJson(req));}catch(error){return send(res,error.status||400,{error:error.message});}
+        if(db.prepare('SELECT 1 FROM sapling_events WHERE id=?').get(event.id))return send(res,409,{error:'活動代碼已存在'});
+        db.prepare('INSERT INTO sapling_events(id,json) VALUES(?,?)').run(event.id,JSON.stringify(event));audit(actor.email,'create','saplingEvents',event.id,event);return send(res,201,event);
+      }
+      if(adminSaplingEvents&&req.method==='PUT'&&adminSaplingEvents[1]){
+        const target=decodeURIComponent(adminSaplingEvents[1]);const stored=db.prepare('SELECT json FROM sapling_events WHERE id=?').get(target);if(!stored)return send(res,404,{error:'找不到活動'});
+        const previous=JSON.parse(stored.json);let event;try{event=validateSaplingEvent(await readJson(req),previous,target);}catch(error){return send(res,error.status||400,{error:error.message});}
+        db.prepare('UPDATE sapling_events SET json=? WHERE id=?').run(JSON.stringify(event),target);audit(actor.email,'update','saplingEvents',target,previous);return send(res,200,event);
+      }
       if(req.method==='GET' && p==='/api/admin/registrations')return send(res,200,db.prepare('SELECT json FROM registrations').all().map(x=>JSON.parse(x.json)));
       if (req.method==='GET' && p==='/api/admin/content') return send(res,200,{settings:settings(),posts:list('posts'),ledger:list('ledger'),reports:list('reports')});
       if (req.method==='PUT' && p==='/api/admin/settings') { const b=await readJson(req); const allowed=Object.keys(settings()); const next=settings(); for(const k of allowed) if(k in b){if(typeof b[k]!=='string')return send(res,400,{error:'欄位格式錯誤'});next[k]=b[k].trim();} for(const k of ['lineUrl','instagramUrl','facebookUrl','groupUrl']) if(validateUrl(next[k])===null) return send(res,400,{error:'網址格式錯誤'}); if(validateAssetUrl(next.heroImage)===null)return send(res,400,{error:'首頁圖片網址格式錯誤'}); db.prepare('UPDATE settings SET json=? WHERE id=1').run(JSON.stringify(next)); audit(actor.email,'update','settings','1',next); return send(res,200,next); }

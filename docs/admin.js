@@ -1,4 +1,5 @@
-import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=7ff5e5f7c06e';
+import {renderSaplingsAdmin,bindSaplingsAdmin} from './saplings-admin.js?v=80f76838ae66';
+import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=80f76838ae66';
 
 let host;
 const state = {
@@ -9,7 +10,7 @@ const state = {
 const tabs = [
   ['overview', '總覽'], ['posts', '內容管理'], ['settings', '網站設定'],
   ['ledger', '款項流向'], ['reports', '公開報告'], ['users', '操作人員'],
-  ['registrations','活動報名'], ['subscribers', '訂閱名單'], ['audit', '修改紀錄']
+  ['saplings','小樹苗活動'], ['registrations','活動報名'], ['subscribers', '訂閱名單'], ['audit', '修改紀錄']
 ];
 const settingsFields = [
   ['name','協會正式名稱'], ['shortName','網站簡稱'], ['mission','核心宗旨','textarea'],
@@ -75,6 +76,7 @@ async function loadContent() {
 
 async function loadTabData(tab = state.tab) {
   if (!state.content) await loadContent();
+  if (tab === 'saplings') [state.saplingEvents,state.saplingRegistrations] = await Promise.all([api('/api/admin/saplings/events'),api('/api/admin/saplings/registrations')]);
   if (tab === 'audit') state.audit = await api('/api/admin/audit');
   if (tab === 'registrations') state.registrations = await api('/api/admin/registrations');
   if (tab === 'subscribers') state.subscribers = await api('/api/admin/subscribers');
@@ -150,7 +152,7 @@ function renderLogin() {
 function renderCurrentTab() {
   if (!state.content) return '<section class="panel"><p>正在載入…</p></section>';
   return ({
-    overview: renderOverview, posts: renderPosts, settings: renderSettings,
+    saplings: () => renderSaplingsAdmin(state), overview: renderOverview, posts: renderPosts, settings: renderSettings,
     ledger: renderLedger, reports: renderReports, users: renderUsers,
     registrations: renderRegistrations, subscribers: renderSubscribers, audit: renderAudit
   }[state.tab] || renderOverview)();
@@ -158,7 +160,7 @@ function renderCurrentTab() {
 
 function bindCurrentTab() {
   ({
-    posts: bindPosts, settings: bindSettings, ledger: bindLedger,
+    saplings: () => bindSaplingsAdmin(host,state,async()=>{await loadTabData();render();}), posts: bindPosts, settings: bindSettings, ledger: bindLedger,
     reports: bindReports, users: bindUsers, subscribers: bindSubscribers,
     audit: bindAudit
   }[state.tab] || (() => {}))();
