@@ -1,7 +1,7 @@
-import {saplingsPage,bindSaplings} from './saplings.js?v=80f76838ae66';
-import {api,esc,safeUrl,safeImageUrl,toast,routePath,routeSearch,routeUrl,resolveLinks,staticDemo} from './shared.js?v=80f76838ae66';
-import {renderAdmin} from './admin.js?v=80f76838ae66';
-import {recordPhotos,recordSource} from './media.js?v=80f76838ae66';
+import {saplingsPage,bindSaplings} from './saplings.js?v=baa6bb9d4fc4';
+import {api,esc,safeUrl,safeImageUrl,toast,routePath,routeSearch,routeUrl,resolveLinks,staticDemo} from './shared.js?v=baa6bb9d4fc4';
+import {renderAdmin} from './admin.js?v=baa6bb9d4fc4';
+import {recordPhotos,recordSource} from './media.js?v=baa6bb9d4fc4';
 
 const root=document.querySelector('#app');
 let data, filter='全部', donationStep=1, donation={frequency:'單次捐款',amount:600,purpose:'由協會統籌運用',receipt:'電子收據'}, ledgerDemo=false;
@@ -52,5 +52,5 @@ function bind(){bindSaplings(root);root.querySelector('#registration-form')?.add
 render();
 
 if (staticDemo) {
- document.querySelector('#reset-demo')?.addEventListener('click',async()=>{if(!confirm('清除這個瀏覽器的測試資料，重新載入初始示範？'))return;try{await (await import('./pages-demo.js?v=80f76838ae66')).resetDemo();location.href=routeUrl('/');}catch(error){toast(error.message);}});
+ document.querySelector('#reset-demo')?.addEventListener('click',async()=>{if(!confirm('清除這個瀏覽器的測試資料，重新載入初始示範？'))return;try{await (await import('./pages-demo.js?v=baa6bb9d4fc4')).resetDemo();location.href=routeUrl('/');}catch(error){toast(error.message);}});
 }

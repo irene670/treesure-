@@ -1,5 +1,5 @@
-import {renderSaplingsAdmin,bindSaplingsAdmin} from './saplings-admin.js?v=80f76838ae66';
-import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=80f76838ae66';
+import {renderSaplingsAdmin,bindSaplingsAdmin} from './saplings-admin.js?v=baa6bb9d4fc4';
+import { api, esc, safeUrl, safeImageUrl, toast, resolveLinks, staticDemo } from './shared.js?v=baa6bb9d4fc4';
 
 let host;
 const state = {

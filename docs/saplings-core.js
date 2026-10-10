@@ -154,8 +154,8 @@ export function handleSaplingRequest(state, path, options = {}, context = {}) {
     const prior = state.saplingRegistrations.find(item => item.eventId === row.eventId && item.email === row.email);
     const event = state.saplingEvents.find(item => item.id === row.eventId);
     if (prior) return {handled:true, result:{id:prior.id, duplicate:true, isDemo:Boolean(event?.isDemo)}};
-    row.id = (context.id || crypto.randomUUID)();
-    row.unsubscribeToken = (context.token || crypto.randomUUID)();
+    row.id = (context.id || (()=>crypto.randomUUID()))();
+    row.unsubscribeToken = (context.token || (()=>crypto.randomUUID()))();
     state.saplingRegistrations.push(row);
     return {handled:true, result:{id:row.id, duplicate:false, isDemo:Boolean(event?.isDemo), unsubscribeToken:row.unsubscribeToken}};
   }

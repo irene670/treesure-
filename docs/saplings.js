@@ -1,4 +1,4 @@
-import {api,esc,staticDemo,routeUrl,routeSearch,resolveLinks} from './shared.js?v=80f76838ae66';
+import {api,esc,staticDemo,routeUrl,routeSearch,resolveLinks} from './shared.js?v=baa6bb9d4fc4';
 const leaf='<svg viewBox="0 0 120 150" aria-hidden="true"><path d="M60 143V58M60 95C12 99 8 55 13 39c39 0 49 23 47 56ZM60 71c-3-39 21-57 48-59 4 31-11 58-48 59Z" fill="#73966a" stroke="#355b3c" stroke-width="4"/></svg>';
 const notice=()=>`<p class="notice">臨時測試版 · ${staticDemo?'資料與照片只存在這台手機／瀏覽器，不會傳到協會；請使用測試資料。':'資料集中保存在這台測試伺服器；尚未啟用寄信與線上收款。'}</p>`;
 export async function saplingsPage(path){
