@@ -1,0 +1,1 @@
+export default function Home(){return <main className="wrap"><span className="eyebrow">SENZANG · GROW TOGETHER</span><h1>領一株小樹，<br/>種下希望。</h1><p>陪一棵小樹長大，也為未來的森林留下可能。</p><a className="button" href="https://irene670.github.io/treesure-/?page=%2Fsaplings%2Faozihdi-2026-10-11">前往樹苗活動與登記</a><p><a href="/admin">協會活動名單後台</a></p></main>;}

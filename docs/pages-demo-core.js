@@ -1,5 +1,5 @@
-import {validateRegistration} from './registration-core.js?v=baa6bb9d4fc4';
-import {handleSaplingRequest} from './saplings-core.js?v=baa6bb9d4fc4';
+import {validateRegistration} from './registration-core.js?v=42265ccd14db';
+import {handleSaplingRequest} from './saplings-core.js?v=42265ccd14db';
 // Browser-local testing adapter. These checks model UI workflows, not server security.
 const copy = value => structuredClone(value);
 const id = () => crypto.randomUUID();

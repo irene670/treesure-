@@ -1,4 +1,4 @@
-import {createDemoState,handleDemoRequest,addMissingSeedPosts} from './pages-demo-core.js?v=baa6bb9d4fc4';
+import {createDemoState,handleDemoRequest,addMissingSeedPosts} from './pages-demo-core.js?v=42265ccd14db';
 
 const DB_NAME='mori-pages-test-v1';
 const STORE='demo';

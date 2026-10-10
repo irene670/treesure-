@@ -30,11 +30,13 @@ export function safeUrl(value, fallback = '#') {
 export function safeImageUrl(value) {
   return staticDemo && /^data:image\/(?:png|jpeg|webp);base64,[a-zA-Z0-9+/=]+$/.test(value) ? value : safeUrl(value);
 }
+export const saplingServiceOrigin='https://senzang-sapling-registration.workspace-912217.chatgpt.site';
 export async function api(path, options = {}) {
-  if (staticDemo) return (await import('./pages-demo.js?v=baa6bb9d4fc4')).demoApi(path, options);
+  const sharedSapling = staticDemo && (path.startsWith('/api/saplings/') || ['/api/subscribe','/api/unsubscribe'].includes(path));
+  if (staticDemo && !sharedSapling) return (await import('./pages-demo.js?v=42265ccd14db')).demoApi(path, options);
   const init = {...options, headers:{...options.headers}};
   if (init.body && typeof init.body !== 'string') { init.body=JSON.stringify(init.body); init.headers['Content-Type']='application/json'; }
-  const res=await fetch(path, init); const data=await res.json();
+  const res=await fetch(sharedSapling ? saplingServiceOrigin+path : path, init); const data=await res.json();
   if (!res.ok) throw new Error(data.error || '操作未完成，請稍後再試');
   return data;
 }

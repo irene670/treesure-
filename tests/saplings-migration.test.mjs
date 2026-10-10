@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {initializeDatabase} from '../seed.mjs';
+import {importSaplingArchive} from '../scripts/import-saplings.mjs';
+import {initialContent} from '../content-seed.mjs';
+const event={...initialContent.saplingEvents[0],isDemo:false};
+const row={id:'migration-person-1',eventId:event.id,name:'移轉紀錄',email:'migration@example.com',phone:'',species:'羅漢松',quantity:1,privacyConsent:true,notificationConsent:true,notificationActive:false,createdAt:'2026-10-10T09:00:00Z',unsubscribeToken:'1'.repeat(64),photo:{mime:'image/png',data:'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Zl1sAAAAASUVORK5CYII='}};
+test('移轉保留合照、原始編號、時間、取消通知狀態，重複匯入不新增',()=>{const db=initializeDatabase(':memory:');try{const input={version:1,events:[event],registrations:[row],subscribers:[{email:'subscriber@example.com',unsubscribeToken:'2'.repeat(64),consentAt:row.createdAt,active:false}]};assert.deepEqual(importSaplingArchive(db,input),{added:1,skipped:0,subscriptionAdded:1});const actual=JSON.parse(db.prepare('SELECT json FROM sapling_registrations WHERE id=?').get(row.id).json);assert.equal(actual.photo.data,row.photo.data);assert.equal(actual.notificationActive,false);assert.equal(actual.createdAt,row.createdAt);assert.equal(actual.unsubscribeToken,row.unsubscribeToken);assert.equal(db.prepare('SELECT active FROM subscribers').get().active,0);assert.equal(importSaplingArchive(db,input).skipped,1);}finally{db.close();}});
+test('移轉資料驗證失敗時不留下半份名單',()=>{const db=initializeDatabase(':memory:');try{assert.throws(()=>importSaplingArchive(db,{version:1,events:[event],registrations:[row,{...row,id:'bad',privacyConsent:false}]}));assert.equal(db.prepare('SELECT COUNT(*) AS n FROM sapling_registrations').get().n,0);}finally{db.close();}});

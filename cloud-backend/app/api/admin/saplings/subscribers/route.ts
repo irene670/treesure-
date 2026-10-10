@@ -1,0 +1,2 @@
+import {bindings,errorResponse,requireAdmin,privateJson} from '@/lib/saplings-api';
+export async function GET(){try{await requireAdmin();const {db}=bindings();const rows=await db.prepare('SELECT email, consent_at, active FROM newsletter_subscribers ORDER BY consent_at DESC').all<{email:string;consent_at:string;active:string}>();return privateJson(rows.results.map(r=>({email:r.email,consentAt:r.consent_at,active:r.active==='1'})));}catch(e){return errorResponse(e);}}
